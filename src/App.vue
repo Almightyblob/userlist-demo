@@ -3,6 +3,8 @@ import RolePill from "./components/RolePill.vue";
 import UserIcon from "./components/UserIcon.vue";
 import UserDetails from "./components/UserDetails.vue";
 import UserListItem from "./components/UserListItem.vue";
+import UserList from "./components/UserList.vue";
+import Button from './components/Button.vue'
 </script>
 
 <template class="bg-gray-light">
@@ -22,6 +24,8 @@ import UserListItem from "./components/UserListItem.vue";
     email="dominik.antunovic@gmail.com"
     role="AGENT"
   />
+  <UserList />
+  <Button type="edit" text="Edit" />
 </template>
 
 <style scoped>
