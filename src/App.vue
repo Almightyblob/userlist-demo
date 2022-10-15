@@ -25,7 +25,8 @@ import Button from './components/Button.vue'
     role="AGENT"
   />
   <UserList />
-  <Button type="edit" text="Edit" />
+  <Button icon="delete" />
+  <Button klaus-blue text="Connect" large />
 </template>
 
 <style scoped>

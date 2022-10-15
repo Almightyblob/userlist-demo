@@ -1,6 +1,6 @@
 <template>
     <div 
-        class="relative | h-16 w-full | flex flex-row justify-between items-center | rounded-md | px-4 | overflow-hidden | hover:bg-highlight-gray"
+        class="relative | h-16 w-full | flex flex-row justify-between items-center | rounded-md | px-4 | overflow-hidden | hover:bg-highlight-gray group"
         :class="checked && 'bg-highlight-gray'"
         >
         <div v-if="checked" class="absolute left-0 top-0 | h-full w-1 bg-klaus-blue" />
@@ -10,11 +10,12 @@
         </div>
         
         
-        <div class="w-5/12 | flex flex-row justify-between">
+        <div class="w-5/12 | flex flex-row justify-between items-center">
             <RolePill :role="role" />
-            <p>
-                Action buttons
-            </p>
+            <div class="hidden flex-row space-x-2 items-center | group-hover:flex">
+                <Button icon="edit" text="Edit"/>
+                <Button icon="delete" />
+            </div>
         </div>
     </div>
 </template>
@@ -22,7 +23,10 @@
 <script lang="ts">
 import UserDetails from './UserDetails.vue'
 import RolePill from './RolePill.vue'
+import Button from './Button.vue'
+
 export default {
+    components: { UserDetails, RolePill, Button },
     props: {
         image: {
             type: String,
@@ -46,7 +50,5 @@ export default {
             checked: false
         }
     },
-    components: {UserDetails, RolePill}
-
 }
 </script>
