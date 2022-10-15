@@ -1,23 +1,70 @@
 <template>
-    <button class="h-8 | flex flex-row items-center space-x-2 | border border-gray-light rounded | py-4 px-2">
-        <font-awesome-icon v-if="icon" class="text-gray-light" :icon="icon" />
-        <span class="text-sm text-gray-dark font-bold" v-text="text" />
-    </button>
-
+  <button
+    class="flex flex-row items-center space-x-2 | rounded | py-4 px-2 | transition-transform duration-100 hover:-translate-y-0.5 group"
+    :class="`${buttonSize} | ${buttonColor.button}`"
+  >
+    <font-awesome-icon
+      v-if="icon"
+      class="text-gray-anthracite group-focus:text-white"
+      :icon="iconName"
+    />
+    <span
+      v-if="text"
+      class="text-sm font-bold"
+      :class="buttonColor.text"
+      v-text="text"
+    />
+  </button>
 </template>
 
 <script lang="ts">
-export default {
-    props: {
-        type: {
-            type: String,
-            required: false,
-        },
-        text: {
-            type: String,
-            required: false
-        }
-    }
-}
 
+interface ButtonColor {
+    button: string,
+    text: string
+}
+ 
+export default {
+  props: {
+    icon: {
+      type: String,
+          default: '',
+    },
+    text: {
+      type: String,
+      default: '',
+    },
+    klausBlue: {
+      type: Boolean,
+      default: false,
+    },
+    large: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    iconName(): string {
+      if (this.icon === "edit") return "fa-pencil";
+      if (this.icon === "delete") return "fa-trash-can";
+      return "";
+    },
+    buttonSize(): string {
+      return this.large ? "h-10" : "h-8";
+    },
+    buttonColor(): ButtonColor {
+      return this.klausBlue
+        ? {
+            button:
+              "bg-klaus-blue text-white focus:border focus:border-klaus-blue focus:bg-white",
+            text: "text-white group-focus:text-klaus-blue",
+          }
+        : {
+            button:
+              "bg-white border border-gray-button-border shadow-sm shadow-gray-button-border focus:bg-klaus-blue",
+            text: "text-[#4A5568] group-focus:text-white",
+          };
+    },
+  },
+};
 </script>

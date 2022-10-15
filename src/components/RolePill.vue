@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-import { roles } from '../enums/roles'
-import type {Roles} from '../enums/roles'
+import { roles } from '@/enums/roles'
+import type {Roles} from '@/types/roles'
 export default {
     props: {
         role: {
@@ -23,7 +23,7 @@ export default {
         }
     },
     methods: {
-        pillClass(role: string) {
+        pillClass(role: string): string {
             let roleColours = ''
 
             switch (role) {

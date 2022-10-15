@@ -22,7 +22,9 @@ module.exports = {
       "klaus-blue": "#475DE5",
       gray: {
         light: "#E5E5E5",
+        "button-border": "#E2E8F0",
         dark: "#718096",
+        anthracite: "#A0AEC0",
       },
       "gray-blue": "#EDF2F7",
       "highlight-gray": "#F7FAFC",

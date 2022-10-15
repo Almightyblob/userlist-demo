@@ -1,32 +1,9 @@
 <script setup lang="ts">
-import RolePill from "./components/RolePill.vue";
-import UserIcon from "./components/UserIcon.vue";
-import UserDetails from "./components/UserDetails.vue";
-import UserListItem from "./components/UserListItem.vue";
-import UserList from "./components/UserList.vue";
-import Button from './components/Button.vue'
+import UserList from "@/components/UserList.vue";
 </script>
 
-<template class="bg-gray-light">
-  <RolePill role="AGENT" />
-  <RolePill role="ADMIN" />
-  <RolePill role="ACCOUNT_MANAGER" />
-  <RolePill role="EXTERNAL_REVIEWER" />
-  <UserIcon image="https://randomuser.me/api/portraits/women/44.jpg" />
-  <UserDetails
-    image="https://randomuser.me/api/portraits/women/44.jpg"
-    name="Dominik Antunovic"
-    email="dominik.antunovic@gmail.com "
-  />
-  <UserListItem
-    image="https://randomuser.me/api/portraits/women/44.jpg"
-    name="Dominik Antunovic"
-    email="dominik.antunovic@gmail.com"
-    role="AGENT"
-  />
+<template>
   <UserList />
-  <Button icon="delete" />
-  <Button klaus-blue text="Connect" large />
 </template>
 
 <style scoped>

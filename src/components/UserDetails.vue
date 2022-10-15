@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import UserIcon from "./UserIcon.vue";
+import UserIcon from "@/components/UserIcon.vue";
 
 export default {
   props: {
