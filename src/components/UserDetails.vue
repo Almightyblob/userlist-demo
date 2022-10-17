@@ -8,11 +8,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import UserIcon from "@/components/UserIcon.vue";
 
-export default {
-  props: {
+  const props = defineProps({
     image: {
       type: String,
     },
@@ -24,7 +23,5 @@ export default {
       type: String,
       required: true,
     },
-  },
-  components: { UserIcon },
-};
+  })
 </script>

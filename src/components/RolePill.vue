@@ -1,14 +1,15 @@
 <template>
     <span :class="pillClass(role)">
-        {{roles[role as keyof Roles]}}
+        {{roleList[role as keyof Roles]}}
     </span>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { roles } from '@/enums/roles'
-import type {Roles} from '@/types/roles'
-export default {
-    props: {
+import type { Roles } from '@/types/roles'
+import { ref } from 'vue'
+
+    const props = defineProps({
         role: {
             type: String,
             required: true,
@@ -16,14 +17,10 @@ export default {
                 return ['AGENT', 'ADMIN', 'ACCOUNT_MANAGER', 'EXTERNAL_REVIEWER'].includes(value)
             }
         }
-    },
-    data() {
-        return {
-            roles
-        }
-    },
-    methods: {
-        pillClass(role: string): string {
+    })
+const roleList = ref<Roles>(roles)
+    
+    function pillClass(role: string): string {
             let roleColours = ''
 
             switch (role) {
@@ -45,6 +42,4 @@ export default {
             return 'py-[6px] px-[16px] rounded font-bold text-xs ' + roleColours
 
         }
-    }
-}
 </script>

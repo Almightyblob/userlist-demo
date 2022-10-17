@@ -17,16 +17,16 @@
   </button>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue'
 
 interface ButtonColor {
     button: string,
     text: string
 }
- 
-export default {
-  props: {
-    icon: {
+
+const props = defineProps({
+      icon: {
       type: String,
           default: '',
     },
@@ -42,18 +42,20 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  computed: {
-    iconName(): string {
-      if (this.icon === "edit") return "fa-pencil";
-      if (this.icon === "delete") return "fa-trash-can";
+})
+
+const iconName = computed(():string => {
+    if (props.icon === "edit") return "fa-pencil";
+      if (props.icon === "delete") return "fa-trash-can";
       return "";
-    },
-    buttonSize(): string {
-      return this.large ? "h-10" : "h-8";
-    },
-    buttonColor(): ButtonColor {
-      return this.klausBlue
+  })
+
+const buttonSize = computed((): string =>{
+      return props.large ? "h-10" : "h-8";
+})
+    
+    const buttonColor = computed(():ButtonColor => {
+      return props.klausBlue
         ? {
             button:
               "bg-klaus-blue text-white focus:border focus:border-klaus-blue focus:bg-white",
@@ -64,7 +66,6 @@ export default {
               "bg-white border border-gray-button-border shadow-sm shadow-gray-button-border focus:bg-klaus-blue",
             text: "text-[#4A5568] group-focus:text-white",
           };
-    },
-  },
-};
+    })
+
 </script>

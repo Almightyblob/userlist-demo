@@ -5,13 +5,11 @@
     />
 </template>
 
-<script lang="ts">
-export default {
-    props: {
+<script setup lang="ts">
+    const props = defineProps({
         image: {
             type: String,
             default: 'https://placekitten.com/g/200/200',
         }
-    }
-}
+    })
 </script>

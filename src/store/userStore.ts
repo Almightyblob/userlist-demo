@@ -1,18 +1,29 @@
 import { defineStore } from "pinia";
 import type { User } from "@/types/users";
 
-interface UserStore {
-  allUsers: User[];
+declare module 'pinia' {
+  export interface PiniaCustomProperties {
+    allUsers: User[];
+    get truncatedList(): User[];
+    get selectedAmount(): number;
+    set setAllUsers(allUsers);
+    set selectUser(allUsers);
+    set deleteUsers(allUsers);
+    set deleteSelectedUsers(allUsers);
+  }
 }
 
-export const userStore = defineStore<string, UserStore>("users", {
+export const userStore = defineStore("users", {
   state: () => ({
     allUsers: [],
   }),
   getters: {
     selectedAmount(): number {
       return this.allUsers.filter((user) => user.checked === true).length;
-    },
+      },
+      truncatedList(): User[] {
+        return this.allUsers.slice(0,10)
+    }
   },
   actions: {
     setAllUsers(users: User[]): void {
