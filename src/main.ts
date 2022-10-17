@@ -7,12 +7,14 @@ import {
   faPencil,
   faTrashCan,
   faMagnifyingGlass,
+  faArrowUp,
+  faArrowDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./assets/main.css";
 
 /* add icons to the library */
-library.add(faPencil, faTrashCan, faMagnifyingGlass);
+library.add(faPencil, faTrashCan, faMagnifyingGlass, faArrowUp, faArrowDown);
 const pinia = createPinia();
 const app = createApp(App);
 

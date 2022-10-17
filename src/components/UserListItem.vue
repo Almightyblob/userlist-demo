@@ -46,7 +46,11 @@ export default defineComponent({
     user: {
       type: Object,
       required: true,
-    },
+      },
+      checkAll: {
+        type: Boolean,
+        required: true
+    }
   },
   data() {
     return {
@@ -62,7 +66,11 @@ export default defineComponent({
   watch: {
     user(): void {
       this.checked = this.user.checked;
-    },
+      },
+      checkAll(): void {
+        this.checked = this.checkAll
+        this.$emit('select', this.checkAll)
+    }   
   },
 });
 </script>
