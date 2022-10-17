@@ -60,28 +60,30 @@ export const userStore = defineStore("users", {
     },
     selectUser(selected: boolean | undefined, selectedUser: User): void {
       const index = this.filteredUserList.indexOf(selectedUser);
-        this.filteredUserList[index].checked = selected;
-        
-              const index2 = this.allUsers.indexOf(selectedUser);
-              this.allUsers[index2].checked = selected;
+      this.filteredUserList[index].checked = selected;
+
+      const index2 = this.allUsers.indexOf(selectedUser);
+      this.allUsers[index2].checked = selected;
     },
     deleteUser(selectedUser: User): void {
       this.filteredUserList = this.filteredUserList.filter((user) => {
         return user !== selectedUser;
       });
-              this.allUsers = this.allUsers.filter((user) => {
-                return user !== selectedUser;
-              });
-      },
-      deleteSelectedUsers(): void {
-        const usersToDelete = this.filteredUserList.filter((user: User) => {
-          return user.checked !== false;
-        });
-          
-          this.filteredUserList = this.filteredUserList.filter((user: User) => !usersToDelete.includes(user));
-          this.allUsers = this.allUsers.filter((user: User) =>
-            !usersToDelete.includes(user)
-          );
+      this.allUsers = this.allUsers.filter((user) => {
+        return user !== selectedUser;
+      });
+    },
+    deleteSelectedUsers(): void {
+      const usersToDelete = this.filteredUserList.filter((user: User) => {
+        return user.checked !== false;
+      });
+
+      this.filteredUserList = this.filteredUserList.filter(
+        (user: User) => !usersToDelete.includes(user)
+      );
+      this.allUsers = this.allUsers.filter(
+        (user: User) => !usersToDelete.includes(user)
+      );
     },
     showMoreUsers(): void {
       this.usersToDisplay = this.usersToDisplay + 10;
