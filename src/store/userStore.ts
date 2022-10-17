@@ -6,20 +6,20 @@ declare module 'pinia' {
     allUsers: User[];
     get truncatedList(): User[];
     get selectedAmount(): number;
-    set setAllUsers(allUsers);
-    set selectUser(allUsers);
-    set deleteUsers(allUsers);
-    set deleteSelectedUsers(allUsers);
+    set setAllUsers(allUsers: User[]);
+    set selectUser(allUsers: User[]);
+    set deleteUsers(allUsers: User[]);
+    set deleteSelectedUsers(allUsers: User[]);
   }
 }
 
 export const userStore = defineStore("users", {
   state: () => ({
-    allUsers: [],
+    allUsers: [] as User[],
   }),
   getters: {
     selectedAmount(): number {
-      return this.allUsers.filter((user) => user.checked === true).length;
+      return this.allUsers.filter((user: User) => user.checked === true).length;
       },
       truncatedList(): User[] {
         return this.allUsers.slice(0,10)
@@ -28,9 +28,9 @@ export const userStore = defineStore("users", {
   actions: {
     setAllUsers(users: User[]): void {
       this.allUsers = users;
-      this.allUsers.forEach((user) => (user.checked = false));
+      this.allUsers.forEach((user: User) => (user.checked = false));
     },
-    selectUser(selected: boolean, selectedUser: User): void {
+    selectUser(selected: boolean | undefined, selectedUser: User): void {
       const index = this.allUsers.indexOf(selectedUser);
       this.allUsers[index].checked = selected;
     },
@@ -40,7 +40,7 @@ export const userStore = defineStore("users", {
       });
     },
     deleteSelectedUsers(): void {
-      this.allUsers = this.allUsers.filter((user) => {
+      this.allUsers = this.allUsers.filter((user: User) => {
         return user.checked === false;
       });
     },

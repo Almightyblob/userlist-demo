@@ -41,7 +41,7 @@ import { storeToRefs } from "pinia";
 const { allUsers } = storeToRefs(store);
     
 
-    const selectUser = (selected: Boolean, selectedUser: User) : void => {
+    const selectUser = (selected: boolean, selectedUser: User) : void => {
         store.selectUser(selected, selectedUser);
     }
       
