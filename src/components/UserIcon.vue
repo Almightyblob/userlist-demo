@@ -1,7 +1,7 @@
 <template>
     <div 
         class="h-8 w-8 rounded-full bg-klaus-blue bg-center bg-contain" 
-        :style="`background-image: url(${image}`"
+        :style="`background-image: url(${image})`"
     />
 </template>
 

@@ -1,27 +1,11 @@
 import { defineStore } from "pinia";
 import type { User } from "@/types/users";
 
-declare module "pinia" {
-  export interface PiniaCustomProperties {
-    allUsers: User[];
-    filteredUserList: User[];
-    searchResults: User[];
-    usersToDisplay: number;
-    get truncatedList(): User[];
-    get selectedAmount(): number;
-    set setAllUsers(allUsers: User[]);
-    set selectUser(allUsers: User[]);
-    set deleteUsers(allUsers: User[]);
-    set deleteSelectedUsers(allUsers: User[]);
-    set sortList(filtered: User[]);
-  }
-}
-
 export const userStore = defineStore("users", {
   state: () => ({
     allUsers: [] as User[],
     filteredUserList: [] as User[],
-    usersToDisplay: 10,
+    usersToDisplay: 100,
     descending: true,
   }),
   getters: {
@@ -57,6 +41,7 @@ export const userStore = defineStore("users", {
       this.filteredUserList = this.allUsers.filter((user) =>
         user.name.toLowerCase().includes(searchWord.toLowerCase())
       );
+      this.resetUsersToDisplay();
     },
     selectUser(selected: boolean | undefined, selectedUser: User): void {
       const index = this.filteredUserList.indexOf(selectedUser);
@@ -86,10 +71,13 @@ export const userStore = defineStore("users", {
       );
     },
     showMoreUsers(): void {
-      this.usersToDisplay = this.usersToDisplay + 10;
+      this.usersToDisplay = this.usersToDisplay + 100;
+    },
+    resetUsersToDisplay(): void {
+      this.usersToDisplay = 100;
     },
     sortList(): void {
-      this.truncatedList.sort((userA, userB) => {
+      this.filteredUserList.sort((userA, userB) => {
         return this.descending
           ? userA.role.localeCompare(userB.role)
           : userB.role.localeCompare(userA.role);

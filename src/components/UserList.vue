@@ -25,7 +25,6 @@
             v-model="checkedAllUsers"
             class="accent-klaus-blue h-4 w-4"
             type="checkbox"
-            @change="selectAllUsers"
           />
           <span class="text-xs text-gray-dark font-bold">Users </span>
         </div>
@@ -43,7 +42,7 @@
           </div>
         </div>
       </div>
-      <div class="h-[640px] overflow-scroll">
+      <div ref="el" class="h-[600px] overflow-y-scroll">
         <UserListItem
           v-for="user in store.truncatedList"
           :user="user"
@@ -52,9 +51,8 @@
           :check-all="checkedAllUsers"
         />
       </div>
-      <button class="text-xs text-gray-dark font-bold" @click="store.showMoreUsers">
-        Show 10 more results ({{ store.usersDisplayed }} of
-        {{ store.usersInList }})
+      <button class="text-xs text-gray-dark font-bold">
+        {{ store.usersDisplayed }} of {{ store.usersInList }}
       </button>
     </div>
   </div>
@@ -67,7 +65,19 @@ import Button from "@/components/Button.vue";
 import type { User } from "@/types/users";
 import { userStore } from "@/store/userStore";
 import { ref } from "vue";
+import { useInfiniteScroll } from "@vueuse/core";
+import _ from "lodash";
 
+const el = ref<HTMLElement>();
+
+useInfiniteScroll(
+  el,
+  () => {
+    // load more
+    store.showMoreUsers();
+  },
+  { distance: 100 }
+);
 const store = userStore();
 
 let checkedAllUsers = ref(false);
@@ -89,15 +99,22 @@ const deleteSelectedUsers = (): void => {
   checkedAllUsers.value = false;
 };
 
-const selectAllUsers = () => {
-  console.log(checkedAllUsers);
-};
-
 const usersResponse = await fetch(
   "https://raw.githubusercontent.com/klausapp/frontend-engineer-test-task/master/users.json"
 )
   .then((res) => res.json())
-  .then((res) => res.users);
+  .then((res) =>
+    res.users
+      .sort((userA: User, userB: User) => {
+        return userA.name
+          .split(" ")
+          .pop()!
+          .localeCompare(userB.name.split(" ").pop()!);
+      })
+      .sort((userA: User, userB: User) => {
+        return userA.role.localeCompare(userB.role);
+      })
+  );
 
 store.setAllUsers(usersResponse);
 </script>
