@@ -1,60 +1,67 @@
 import { defineStore } from "pinia";
 import type { User } from "@/types/users";
+import _ from 'lodash'
+
+interface ApiResponse {
+  results: [User[]];
+  totalAmount: number;
+  currentPage: number;
+  nextPage: number | null;
+}
 
 export const userStore = defineStore("users", {
   state: () => ({
-    allUsers: [] as User[],
+    userList: [] as User[],
+    searchTerm: '',
+    currentPage: 1,
+    nextPage: 1 as number | null,
+    totalAmount: 0,
     filteredUserList: [] as User[],
     usersToDisplay: 100,
     descending: true,
   }),
   getters: {
     selectedAmount(): number {
-      return this.allUsers.filter((user: User) => user.checked === true).length;
+      return this.userList.filter((user: User) => user.checked === true).length;
     },
     usersInList(): number {
       return this.filteredUserList.length;
     },
     usersDisplayed(): number {
-      return this.truncatedList.length;
-    },
-    truncatedList(): User[] {
-      return this.filteredUserList
-        .slice(0, this.usersToDisplay)
-        .sort((userA, userB) => {
-          return this.descending
-            ? userA.role.localeCompare(userB.role)
-            : userB.role.localeCompare(userA.role);
-        });
+      return this.userList.length;
     },
   },
   actions: {
-    setAllUsers(users: User[]): void {
-      this.allUsers = users;
-      this.allUsers.forEach((user: User) => (user.checked = false));
-      this.filteredUserList = [...this.allUsers];
+    updateState(data: ApiResponse): void {
+      this.userList = [... this.userList, ...data.results];
+      this.currentPage = data.currentPage;
+      this.nextPage = data.nextPage;
+      this.totalAmount = data.totalAmount;
+      this.filteredUserList = [...this.userList];
+      console.log('fresh', data.nextPage)
+    },
+    reset() {
+      this.userList = [];
+      this.currentPage = 1;
+      this.nextPage = 1;
+      this.totalAmount = 0
     },
     search(searchWord: string): void {
-      if (!searchWord) {
-        this.filteredUserList = [...this.allUsers];
-      }
-      this.filteredUserList = this.allUsers.filter((user) =>
-        user.name.toLowerCase().includes(searchWord.toLowerCase())
-      );
+      this.searchTerm = searchWord
       this.resetUsersToDisplay();
     },
     selectUser(selected: boolean | undefined, selectedUser: User): void {
       const index = this.filteredUserList.indexOf(selectedUser);
       this.filteredUserList[index].checked = selected;
 
-      const index2 = this.allUsers.indexOf(selectedUser);
-      this.allUsers[index2].checked = selected;
+      const index2 = this.userList.indexOf(selectedUser);
+      this.userList[index2].checked = selected;
     },
     deleteUser(selectedUser: User): void {
       this.filteredUserList = this.filteredUserList.filter((user) => {
         return user !== selectedUser;
       });
-      this.allUsers = this.allUsers.filter((user) => {
+      this.userList = this.userList.filter((user) => {
         return user !== selectedUser;
       });
     },
@@ -66,7 +73,7 @@ export const userStore = defineStore("users", {
       this.filteredUserList = this.filteredUserList.filter(
         (user: User) => !usersToDelete.includes(user)
       );
-      this.allUsers = this.allUsers.filter(
+      this.userList = this.userList.filter(
         (user: User) => !usersToDelete.includes(user)
       );
     },
@@ -76,16 +83,8 @@ export const userStore = defineStore("users", {
     resetUsersToDisplay(): void {
       this.usersToDisplay = 100;
     },
-    sortList(): void {
-      this.filteredUserList.sort((userA, userB) => {
-        return this.descending
-          ? userA.role.localeCompare(userB.role)
-          : userB.role.localeCompare(userA.role);
-      });
-    },
     changeSortDirection(): void {
       this.descending = !this.descending;
-      this.sortList();
     },
   },
 });
