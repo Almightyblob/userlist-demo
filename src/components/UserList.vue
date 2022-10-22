@@ -66,7 +66,6 @@ import type { User } from "@/types/users";
 import { userStore } from "@/store/userStore";
 import { ref } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
-import _ from "lodash";
 
 const el = ref<HTMLElement>();
 
