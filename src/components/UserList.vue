@@ -107,7 +107,6 @@ const selectUser = (selected: boolean, selectedUser: User): void => {
 const deleteUser = (selectedUser: User): void => {
   API.deleteUsers([toRaw(selectedUser)]);
   const user = store.selectedUsers.filter((user: User) => user === selectedUser)
-  console.log(user)
   store.updateSelectedUsers(user)
 };
 
