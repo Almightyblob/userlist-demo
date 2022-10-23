@@ -59,7 +59,6 @@ export const userStore = defineStore("users", {
           (user) => user.email !== selectedUser.email
         );
       }
-      console.log(this.selectedUsers);
     },
 
     updateSelectedUsers(users: User[]) {
