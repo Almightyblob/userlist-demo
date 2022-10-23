@@ -105,14 +105,16 @@ const selectUser = (selected: boolean, selectedUser: User): void => {
 };
 
 const deleteUser = (selectedUser: User): void => {
-  store.deleteUser(selectedUser);
   API.deleteUsers([toRaw(selectedUser)]);
+  const user = store.selectedUsers.filter((user: User) => user === selectedUser)
+  console.log(user)
+  store.updateSelectedUsers(user)
 };
 
 const deleteSelectedUsers = (): void => {
   scrollToTop();
   API.deleteUsers(store.selectedUsers);
-  store.deleteSelectedUsers();
+  store.updateSelectedUsers(store.selectedUsers)
   checkedAllUsers.value = false;
 };
 
@@ -128,6 +130,11 @@ const scrollToTop = (): void => {
   el.value!.scrollTop = 0;
 };
 
+// for simplicity's sake, I'm implementing a fake API object below in this component
+// as this is where all data is fed and distributed.
+// It's quick and it's messy, but it serves the purpose to demonstrate how the frontend
+// could dynamically load the data from the backend
+
 interface ApiResponse {
   results: User[];
   totalAmount: number;
@@ -135,7 +142,6 @@ interface ApiResponse {
   nextPage: number | null;
 }
 
-// Creating a fake and messy API, just to have something to work with.
 const API = {
   allUsers: [] as User[],
   getUsers(
@@ -182,8 +188,9 @@ const API = {
       (user: User) => !usersToBeDeleted.includes(user)
     );
     //update userlist after deletions
+    store.reset()
     store.updateState(
-      API.getUsers(store.searchWord, store.descending, store.currentPage)
+      API.getUsers(store.searchWord, store.descending, store.nextPage)
     );
   },
 };
