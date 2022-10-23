@@ -32,7 +32,7 @@
         <div class="w-5/12 | pl-2">
           <div
             class="flex flex-row items-center space-x-2 | hover:cursor-pointer"
-            @click="store.changeSortDirection"
+            @click="changeSortDirection"
           >
             <span class="text-xs text-gray-dark font-bold">Permission</span>
             <font-awesome-icon
@@ -43,9 +43,16 @@
         </div>
       </div>
       <div ref="el" class="h-[600px] overflow-y-scroll">
+        <p
+          v-if="store.userList.length === 0"
+          class="text-center text-gray-dark mt-8"
+          v-text="'No results'"
+        />
         <UserListItem
-          v-for="user in store.filteredUserList"
+          v-else
+          v-for="user in store.userList"
           :user="user"
+          :is-checked="store.selectedUsers.includes(user)"
           @select="(selected: boolean) => selectUser(selected, user)"
           @delete="() => deleteUser(user)"
           :check-all="checkedAllUsers"
@@ -67,7 +74,7 @@ import { userStore } from "@/store/userStore";
 import { ref } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 import _ from "lodash";
-import { storeToRefs } from "pinia";
+import { toRaw } from "vue";
 
 const el = ref<HTMLElement>();
 
@@ -75,7 +82,9 @@ useInfiniteScroll(
   el,
   async () => {
     // load more
-    store.updateState(await API.getUsers(store.searchTerm, _, _, store.nextPage));
+    store.updateState(
+      await API.getUsers(store.searchTerm, store.descending, store.nextPage)
+    );
   },
   { distance: 100 }
 );
@@ -84,9 +93,11 @@ const store = userStore();
 let checkedAllUsers = ref(false);
 
 async function handleSearch(enteredSearchTerm: string) {
-  store.reset()
+  scrollToTop();
   store.search(enteredSearchTerm);
-  store.updateState(await API.getUsers(store.searchTerm, _, _, store.nextPage))
+  store.updateState(
+    API.getUsers(store.searchTerm, store.descending, store.nextPage)
+  );
 }
 
 const selectUser = (selected: boolean, selectedUser: User): void => {
@@ -95,67 +106,91 @@ const selectUser = (selected: boolean, selectedUser: User): void => {
 
 const deleteUser = (selectedUser: User): void => {
   store.deleteUser(selectedUser);
+  API.deleteUsers([toRaw(selectedUser)]);
+  store.updateState(
+    API.getUsers(store.searchTerm, store.descending, store.currentPage)
+  );
 };
 
 const deleteSelectedUsers = (): void => {
+  scrollToTop();
+  API.deleteUsers(store.selectedUsers);
   store.deleteSelectedUsers();
+  store.updateState(
+    API.getUsers(store.searchTerm, store.descending, store.currentPage)
+  );
   checkedAllUsers.value = false;
 };
 
+const changeSortDirection = (): void => {
+  scrollToTop();
+  store.changeSortDirection();
+  store.updateState(
+    API.getUsers(store.searchTerm, store.descending, store.nextPage)
+  );
+};
+
+const scrollToTop = (): void => {
+  el.value!.scrollTop = 0;
+};
+
 interface ApiResponse {
-  results: [User[]],
-  totalAmount: number,
-  currentPage: number,
-  nextPage: number | null
+  results: User[];
+  totalAmount: number;
+  currentPage: number;
+  nextPage: number | null;
 }
 
-// Creating a fake and messy API, just to have something to work with. 
+// Creating a fake and messy API, just to have something to work with.
 const API = {
-  async getUsers(
-    searchWord = "",
-    usersDescending = true,
-    rolesDescending = true,
+  allUsers: [] as User[],
+  getUsers(
+    searchWord: string,
+    rolesDescending: boolean,
     page: number | null
-  ): Promise<ApiResponse | undefined> {
+  ): ApiResponse | undefined {
     if (page === null) {
-      return
+      return;
     } else {
-    page = page <= 0 ? 0 : page -1
+      page = page <= 0 ? 0 : page - 1;
 
-    let result = await fetch(
-      "https://raw.githubusercontent.com/klausapp/frontend-engineer-test-task/master/users.json"
-    ).then((res) => res.json())
-      .then(res => res.users);
-    if (searchWord) {
-      result = result.filter((user: User) =>
-        user.name.toLowerCase().includes(searchWord.toLowerCase())
-      );
-    }
-    let totalAmount = result.length
-    result
-      .sort((userA: User, userB: User) => {
-        return usersDescending
-          ? userA.name
-              .split(" ")
-              .pop()!
-              .localeCompare(userB.name.split(" ").pop()!)
-          : userB.name
-              .split(" ")
-              .pop()!
-              .localeCompare(userA.name.split(" ").pop()!);
-      })
-      .sort((userA: User, userB: User) => {
+      let result = this.allUsers;
+      if (searchWord) {
+        result = result.filter((user: User) =>
+          user.name.toLowerCase().includes(searchWord.toLowerCase())
+        );
+      }
+      let totalAmount = result.length;
+      result.sort((userA: User, userB: User) => {
         return rolesDescending
           ? userA.role.localeCompare(userB.role)
           : userB.role.localeCompare(userA.role);
       });
-    result = _.chunk(result, 100)
-      console.log({results: result[page], totalAmount, currentPage: page + 1, nextPage: (page + 1 >= result.length ? null : page + 2 )})
-    return {results: result[page], totalAmount, currentPage: page + 1, nextPage: (page + 1 >= result.length ? null : page + 2 )};
+      // @ts-ignore
+      result = _.chunk(result, 100);
+      console.log({
+        results: result[page],
+        totalAmount,
+        currentPage: page + 1,
+        nextPage: page + 1 >= result.length ? null : page + 2,
+      });
+      return {
+        // @ts-ignore
+        results: result[page],
+        totalAmount,
+        currentPage: page + 1,
+        nextPage: page + 1 >= result.length ? null : page + 2,
+      };
     }
-  }
+  },
+  deleteUsers(usersToBeDeleted: User[]) {
+    this.allUsers = this.allUsers.filter(
+      (user: User) => !usersToBeDeleted.includes(user)
+    );
+  },
 };
 
+// initial data load to feed fake API
 const usersResponse = await fetch(
   "https://raw.githubusercontent.com/klausapp/frontend-engineer-test-task/master/users.json"
 )
@@ -172,7 +207,6 @@ const usersResponse = await fetch(
         return userA.role.localeCompare(userB.role);
       })
   );
-
-store.updateState(await API.getUsers('', _, _, store.nextPage));
-
+API.allUsers = usersResponse;
+store.updateState(await API.getUsers("", store.descending, store.nextPage));
 </script>

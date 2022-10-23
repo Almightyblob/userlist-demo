@@ -50,22 +50,25 @@ export default defineComponent({
       checkAll: {
         type: Boolean,
         required: true
+    },
+    isChecked: {
+      type: Boolean,
+      required: true,
     }
   },
   data() {
     return {
-      checked: this.user.checked,
+      checked: this.isChecked,
     };
   },
   methods: {
     emitDelete(): void {
       this.$emit("delete");
-      this.checked = false;
     },
   },
   watch: {
-    user(): void {
-      this.checked = this.user.checked;
+    isChecked(): void {
+      this.checked = this.isChecked;
       },
       checkAll(): void {
         this.checked = this.checkAll
