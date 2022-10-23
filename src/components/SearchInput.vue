@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <input
-      v-model="searchTerm"
+      v-model="searchWord"
       class="h-10 | text-sm | border border-[#E2E8F0] rounded | pl-8 pr-2"
       type="text"
       placeholder="search"
@@ -15,10 +15,10 @@
 import { ref, defineEmits } from 'vue'
 const emit = defineEmits(['updated'])
 
-const searchTerm = ref('')
+const searchWord = ref('')
 
 function handleInput() {
-    emit('updated', searchTerm.value)
+    emit('updated', searchWord.value)
 }
 </script>
 

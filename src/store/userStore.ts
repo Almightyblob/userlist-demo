@@ -13,7 +13,7 @@ export const userStore = defineStore("users", {
   state: () => ({
     userList: [] as User[],
     selectedUsers: [] as User[],
-    searchTerm: "",
+    searchWord: "",
     currentPage: 1,
     nextPage: 1 as number | null,
     totalAmount: 0,
@@ -43,8 +43,8 @@ export const userStore = defineStore("users", {
       this.nextPage = 1;
       this.totalAmount = 0;
     },
-    search(searchWord: string): void {
-      this.searchTerm = searchWord;
+    updateSearchWord(searchWord: string): void {
+      this.searchWord = searchWord;
       this.reset();
     },
     selectUser(selected: boolean | undefined, selectedUser: User): void {

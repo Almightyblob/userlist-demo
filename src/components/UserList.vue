@@ -83,7 +83,7 @@ useInfiniteScroll(
   async () => {
     // load more
     store.updateState(
-      await API.getUsers(store.searchTerm, store.descending, store.nextPage)
+      await API.getUsers(store.searchWord, store.descending, store.nextPage)
     );
   },
   { distance: 100 }
@@ -92,11 +92,11 @@ const store = userStore();
 
 let checkedAllUsers = ref(false);
 
-async function handleSearch(enteredSearchTerm: string) {
+async function handleSearch(enteredsearchWord: string) {
   scrollToTop();
-  store.search(enteredSearchTerm);
+  store.updateSearchWord(enteredsearchWord);
   store.updateState(
-    API.getUsers(store.searchTerm, store.descending, store.nextPage)
+    API.getUsers(store.searchWord, store.descending, store.nextPage)
   );
 }
 
@@ -107,18 +107,12 @@ const selectUser = (selected: boolean, selectedUser: User): void => {
 const deleteUser = (selectedUser: User): void => {
   store.deleteUser(selectedUser);
   API.deleteUsers([toRaw(selectedUser)]);
-  store.updateState(
-    API.getUsers(store.searchTerm, store.descending, store.currentPage)
-  );
 };
 
 const deleteSelectedUsers = (): void => {
   scrollToTop();
   API.deleteUsers(store.selectedUsers);
   store.deleteSelectedUsers();
-  store.updateState(
-    API.getUsers(store.searchTerm, store.descending, store.currentPage)
-  );
   checkedAllUsers.value = false;
 };
 
@@ -126,7 +120,7 @@ const changeSortDirection = (): void => {
   scrollToTop();
   store.changeSortDirection();
   store.updateState(
-    API.getUsers(store.searchTerm, store.descending, store.nextPage)
+    API.getUsers(store.searchWord, store.descending, store.nextPage)
   );
 };
 
@@ -187,6 +181,10 @@ const API = {
     this.allUsers = this.allUsers.filter(
       (user: User) => !usersToBeDeleted.includes(user)
     );
+    //update userlist after deletions
+    store.updateState(
+      API.getUsers(store.searchWord, store.descending, store.currentPage)
+    );
   },
 };
 
@@ -208,5 +206,5 @@ const usersResponse = await fetch(
       })
   );
 API.allUsers = usersResponse;
-store.updateState(await API.getUsers("", store.descending, store.nextPage));
+store.updateState(await API.getUsers(store.searchWord, store.descending, store.nextPage));
 </script>
