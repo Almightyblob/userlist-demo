@@ -74,7 +74,6 @@ import { userStore } from "@/store/userStore";
 import { ref } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 import _ from "lodash";
-import { toRaw } from "vue";
 
 const el = ref<HTMLElement>();
 
@@ -105,15 +104,14 @@ const selectUser = (selected: boolean, selectedUser: User): void => {
 };
 
 const deleteUser = (selectedUser: User): void => {
-  API.deleteUsers([toRaw(selectedUser)]);
-  const user = store.selectedUsers.filter((user: User) => user === selectedUser)
-  store.updateSelectedUsers(user)
+  API.deleteUsers([selectedUser]);
+  store.updateSelectedUsers([selectedUser]);
 };
 
 const deleteSelectedUsers = (): void => {
   scrollToTop();
   API.deleteUsers(store.selectedUsers);
-  store.updateSelectedUsers(store.selectedUsers)
+  store.updateSelectedUsers(store.selectedUsers);
   checkedAllUsers.value = false;
 };
 
@@ -143,6 +141,7 @@ interface ApiResponse {
 
 const API = {
   allUsers: [] as User[],
+
   getUsers(
     searchWord: string,
     rolesDescending: boolean,
@@ -182,12 +181,16 @@ const API = {
       };
     }
   },
+
   deleteUsers(usersToBeDeleted: User[]) {
     this.allUsers = this.allUsers.filter(
-      (user: User) => !usersToBeDeleted.includes(user)
+      (user: User) =>
+        !usersToBeDeleted.some(
+          (deleteUser: User) => deleteUser.email === user.email
+        )
     );
     //update userlist after deletions
-    store.reset()
+    store.reset();
     store.updateState(
       API.getUsers(store.searchWord, store.descending, store.nextPage)
     );
@@ -211,6 +214,10 @@ const usersResponse = await fetch(
         return userA.role.localeCompare(userB.role);
       })
   );
+
 API.allUsers = usersResponse;
-store.updateState(await API.getUsers(store.searchWord, store.descending, store.nextPage));
+
+store.updateState(
+  await API.getUsers(store.searchWord, store.descending, store.nextPage)
+);
 </script>
