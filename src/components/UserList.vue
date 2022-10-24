@@ -51,6 +51,7 @@
         <UserListItem
           v-else
           v-for="user in store.userList"
+          :key="user.email"
           :user="user"
           :is-checked="store.selectedUsers.includes(user)"
           @select="(selected: boolean) => selectUser(selected, user)"
@@ -92,11 +93,14 @@ const store = userStore();
 let checkedAllUsers = ref(false);
 
 async function handleSearch(enteredsearchWord: string) {
-  scrollToTop();
-  store.updateSearchWord(enteredsearchWord);
-  store.updateState(
-    API.getUsers(store.searchWord, store.descending, store.nextPage)
-  );
+  if (enteredsearchWord !== store.searchWord) {
+    scrollToTop();
+    store.updateSearchWord(enteredsearchWord);
+    store.updateState(
+      API.getUsers(store.searchWord, store.descending, store.nextPage)
+    );
+    checkedAllUsers.value = false;
+  }
 }
 
 const selectUser = (selected: boolean, selectedUser: User): void => {
